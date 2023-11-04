@@ -1,0 +1,12 @@
+{
+  "name": "books_directory",
+  "version": "1.0.0",
+  "description": "## features to integrate :",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "MaximeArn",
+  "license": "ISC"
+}
