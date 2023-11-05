@@ -9,10 +9,22 @@ server.get("/", (req, res) => {
   res.send(books);
 });
 
-server.get("/:id", ({ params: { imageLink } }, res) => {
+server.get("/book/:id", ({ params: { imageLink } }, res) => {
   console.log(imageLink);
   const book = data.find((book) => book.imageLink === imageLink);
   res.send(book);
+});
+
+server.get("/map", (req, res) => {
+  books_with_id = books.map((book, index) => {
+    book.id = index;
+    return book;
+  });
+  console.log(books_with_id);
+  res.end();
+  fs.writeFile("./books_with_id.json", JSON.stringify(books_with_id), () => {
+    console.log("done");
+  });
 });
 
 server.listen(port, () => {
