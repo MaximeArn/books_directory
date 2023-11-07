@@ -1,18 +1,14 @@
 const express = require("express");
-// const fs = require("fs");
 const multer = require("multer");
+const fs = require("fs");
+
 const books = require("./books.json");
+const { getImageName, getId } = require("./utils/utils");
 
 const port = 3000;
 const server = express();
 
-const getImageName = (title, mimetype) => {
-  fileExtension = mimetype.split("/")[1];
-  const imageName = title.toLowerCase().trim();
-  imageName.replaceAll(" ", "-");
-  return `${imageName}.${fileExtension}`;
-};
-
+// config of the diskStorageOptions
 const storage = multer.diskStorage({
   destination: "./images/",
   filename: function ({ body: { title } }, { mimetype }, cb) {
@@ -20,6 +16,7 @@ const storage = multer.diskStorage({
   },
 });
 
+// instantiate the multer middleware with the diskStorageOptions
 const upload = multer({ storage: storage });
 
 server.get("/", (req, res) => {
@@ -39,23 +36,20 @@ without it the body is undefined
 the data from a multipart are sent as a Stream and multer is listening to this stream through busboy   
 */
 
-server.post("/", upload.single("image"), ({ body, file }, res) => {
-  console.log("add book");
+server.post("/", upload.single("image"), ({ body, file: { path } }, res) => {
+  // TODO: check why it's only possible to push one
+  body.imageLink = path;
+  body.pages = Number.parseInt(body.pages);
+  body.year = Number.parseInt(body.year);
+  body.id = getId();
+
+  newList = [...books, body];
+  console.log(newList);
+  fs.writeFile("./books2.json", JSON.stringify(newList), () => {
+    console.log(`${body.title} added to the list !`);
+  });
   res.end();
 });
-
-// will be usefull later
-// server.get("/map", (req, res) => {
-//   books_with_id = books.map((book, index) => {
-//     book.id = index;
-//     return book;
-//   });
-//   console.log(books_with_id);
-//   res.end();
-//   fs.writeFile("./books_with_id.json", JSON.stringify(books_with_id), () => {
-//     console.log("done");
-//   });
-// });
 
 server.listen(port, () => {
   console.log(`server is listening on port : ${port}`);
