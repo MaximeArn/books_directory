@@ -9,12 +9,12 @@
   - add a route to get a book's information :
     - get id from the params
     - return the corresponding object
-  - integrate a form that allow user to modify the information (writing in json file)
-  - allow user to delete a book from the list
-  - integrate a form to add a new book
+  - integrate a route to add a new book
     - images managment
-    - drag and drop
     - parse the data
+    - store the image in fs with a parsed name
+  - integrate a route that allow user to modify the information (writing in json file)
+  - allow user to delete a book from the list
 - ### Second phase :
   - use a database to store the informations
   - add an authentication system
