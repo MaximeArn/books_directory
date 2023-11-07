@@ -6,17 +6,17 @@ const books = require("./books.json");
 const port = 3000;
 const server = express();
 
-const getImageName = (title) => {
-  title = title.toLowerCase();
-  return title.trim().replaceAll(" ", "-");
+const getImageName = (title, mimetype) => {
+  fileExtension = mimetype.split("/")[1];
+  const imageName = title.toLowerCase().trim();
+  imageName.replaceAll(" ", "-");
+  return `${imageName}.${fileExtension}`;
 };
 
 const storage = multer.diskStorage({
   destination: "./images/",
-  filename: function (req, file, cb) {
-    // console.log("body in multer : ", req.body);
-    // console.log(file);
-    cb(null, file.originalname);
+  filename: function ({ body: { title } }, { mimetype }, cb) {
+    cb(null, getImageName(title, mimetype));
   },
 });
 
@@ -40,9 +40,7 @@ the data from a multipart are sent as a Stream and multer is listening to this s
 */
 
 server.post("/", upload.single("image"), ({ body, file }, res) => {
-  // console.log("add book");
-  // console.log("body : ", body);
-  // console.log(file);
+  console.log("add book");
   res.end();
 });
 
