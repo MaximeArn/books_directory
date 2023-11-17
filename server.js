@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 
-const books = require("./books.json");
+// const books = require("./books.json");
 const { getImageName, getId } = require("./utils/utils");
 
 const port = 3000;
@@ -38,6 +38,8 @@ the data from a multipart are sent as a Stream and multer is listening to this s
 
 server.post("/", upload.single("image"), ({ body, file: { path } }, res) => {
   // TODO: check why it's only possible to push one
+  delete require.cache[require.resolve("./books2.json")];
+  const books = require("./books2.json");
   body.imageLink = path;
   body.pages = Number.parseInt(body.pages);
   body.year = Number.parseInt(body.year);
