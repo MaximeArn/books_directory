@@ -16,6 +16,7 @@
   - integrate a route that allow user to modify the information (writing in json file)
   - allow user to delete a book from the list
 - ### Second phase :
+  - implement a system that refetch the updated data every time it is changed
   - use a database to store the informations
   - add an authentication system
   - add authorization depending on user status

@@ -1,5 +1,5 @@
-delete require.cache[require.resolve("../books2.json")];
-const books = require("../books2.json");
+delete require.cache[require.resolve("../books.json")];
+const books = require("../books.json");
 
 module.exports = {
   getImageName: (title, mimetype) => {
@@ -12,5 +12,10 @@ module.exports = {
   getId: () => {
     lastBook = books[books.length - 1];
     return lastBook.id + 1;
+  },
+
+  getUpdatedBooks: () => {
+    delete require.cache[require.resolve("../books.json")];
+    return require("../books.json");
   },
 };

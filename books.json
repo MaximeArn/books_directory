@@ -1098,5 +1098,16 @@
     "title": "Memoirs of Hadrian",
     "year": 1951,
     "id": 99
+  },
+  {
+    "title": "1984",
+    "pages": 328,
+    "language": "English",
+    "country": "England",
+    "year": 1849,
+    "link": "https://en.wikipedia.org/wiki/Nineteen_Eighty-Four",
+    "author": "Georges Orwell",
+    "imageLink": "images/1984.jpeg",
+    "id": 100
   }
 ]
