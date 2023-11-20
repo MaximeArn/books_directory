@@ -72,6 +72,29 @@ server.delete("/book/:id", ({ params: { id } }, res) => {
   }
 });
 
+server.patch("/book/:id", upload.single("image"), (req, res) => {
+  try {
+    const id = req.params.id;
+    const body = req.body;
+
+    const updtaedBook = {};
+
+    for (const key in body) {
+      const value = body[key];
+      if (value !== "") {
+        updtaedBook[key] = value;
+      }
+    }
+
+    console.log(updtaedBook);
+
+    // return the up to date object
+    res.end();
+  } catch (error) {
+    res.json(error.message);
+  }
+});
+
 server.listen(port, () => {
   console.log(`server is listening on port : ${port}`);
 });
