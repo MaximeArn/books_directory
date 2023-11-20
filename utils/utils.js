@@ -18,4 +18,14 @@ module.exports = {
     delete require.cache[require.resolve("../books.json")];
     return require("../books.json");
   },
+
+  parseBookObject: (book) => {
+    const fieldsToParse = ["pages", "year"];
+    fieldsToParse.forEach((field) => {
+      if (book.hasOwnProperty(field)) {
+        book[field] = Number.parseInt(book[field]);
+      }
+    });
+    return book;
+  },
 };

@@ -3,7 +3,12 @@ const multer = require("multer");
 const fs = require("fs");
 
 let books = require("./books.json");
-const { getImageName, getId, getUpdatedBooks } = require("./utils/utils");
+const {
+  getImageName,
+  getId,
+  getUpdatedBooks,
+  parseBookObject,
+} = require("./utils/utils");
 
 const port = 3000;
 const server = express();
@@ -88,6 +93,7 @@ server.patch("/book/:id", upload.single("image"), (req, res) => {
 
     console.log(updtaedBook);
 
+    parseBookObject(updtaedBook);
     // return the up to date object
     res.end();
   } catch (error) {
