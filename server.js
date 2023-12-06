@@ -59,6 +59,7 @@ server.post("/", upload.single("image"), ({ body, file: { path } }, res) => {
 server.delete("/book/:id", ({ params: { id } }, res) => {
   try {
     books = getUpdatedBooks();
+    // look at this part that looks useless
     const indexToRemove = books.findIndex(
       (book) => book.id === Number.parseInt(id)
     );
@@ -77,29 +78,55 @@ server.delete("/book/:id", ({ params: { id } }, res) => {
   }
 });
 
-server.patch("/book/:id", upload.single("image"), (req, res) => {
-  try {
-    const id = req.params.id;
-    const body = req.body;
+server.patch(
+  "/book/:id",
+  upload.single("image"),
+  ({ params: { id }, body, file }, res) => {
+    try {
+      //TODO: if there is a file add the path to the body object
+      const books = getUpdatedBooks();
+      console.log(file);
+      // const id = req.params.id;
+      // const body = req.body;
 
-    const updtaedBook = {};
+      let updatedBook = {};
 
-    for (const key in body) {
-      const value = body[key];
-      if (value !== "") {
-        updtaedBook[key] = value;
+      for (const key in body) {
+        const value = body[key];
+        if (value !== "") {
+          updatedBook[key] = value;
+        }
       }
+
+      updatedBook = parseBookObject(updatedBook);
+
+      const indexToUpdate = books.findIndex(
+        (book) => book.id === Number.parseInt(id)
+      );
+
+      updatedBook = {
+        ...books[indexToUpdate],
+        ...updatedBook,
+      };
+
+      if (indexToUpdate !== -1) {
+        books[indexToUpdate] = updatedBook;
+        // change the book obect in books with parsedUpdatedBook
+        fs.writeFile("./books.json", JSON.stringify(books), () => {
+          console.log("books was rewrited");
+        });
+        res.json(updatedBook);
+      } else {
+        throw new Error("Error: this book was not find");
+      }
+
+      // return the up to date object
+      res.end();
+    } catch (error) {
+      res.json(error.message);
     }
-
-    console.log(updtaedBook);
-
-    parseBookObject(updtaedBook);
-    // return the up to date object
-    res.end();
-  } catch (error) {
-    res.json(error.message);
   }
-});
+);
 
 server.listen(port, () => {
   console.log(`server is listening on port : ${port}`);
