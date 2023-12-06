@@ -9,6 +9,7 @@ const {
   getUpdatedBooks,
   parseBookObject,
 } = require("./utils/utils");
+const { deleteImage } = require("./utils/utils_images");
 
 const port = 3000;
 const server = express();
@@ -84,15 +85,11 @@ server.patch(
   ({ params: { id }, body, file }, res) => {
     try {
       const books = getUpdatedBooks();
-      console.log(file);
-
-      if (file) {
-        body.imageLink = file.path;
-        //TODO: remove the previous version of the image
-      }
 
       let updatedBook = {};
-
+      const indexToUpdate = books.findIndex(
+        (book) => book.id === Number.parseInt(id)
+      );
       for (const key in body) {
         const value = body[key];
         if (value !== "") {
@@ -100,11 +97,13 @@ server.patch(
         }
       }
 
-      updatedBook = parseBookObject(updatedBook);
+      if (file) {
+        updatedBook.imageLink = file.path;
+        updatedBook.title !== books[indexToUpdate].title &&
+          deleteImage(books[indexToUpdate].imageLink);
+      }
 
-      const indexToUpdate = books.findIndex(
-        (book) => book.id === Number.parseInt(id)
-      );
+      updatedBook = parseBookObject(updatedBook);
 
       updatedBook = {
         ...books[indexToUpdate],

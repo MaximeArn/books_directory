@@ -6,6 +6,7 @@ module.exports = {
     fileExtension = mimetype.split("/")[1];
     const imageName = title.toLowerCase().trim();
     imageName.replaceAll(" ", "-");
+    console.log("image name : ", imageName);
     return `${imageName}.${fileExtension}`;
   },
 

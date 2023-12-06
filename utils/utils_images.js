@@ -1,4 +1,5 @@
 const { join } = require("path");
+const fs = require("fs");
 
 module.exports = {
   getImageName: (title, mimetype) => {
@@ -9,7 +10,11 @@ module.exports = {
   },
 
   deleteImage: (imagePath) => {
-    console.log(imagePath);
-    imagePath = join(__dirname, imagePath);
+    imagePath = join(__dirname, "../", imagePath);
+    fs.unlink(imagePath, (err) => {
+      err
+        ? console.log(`Erreur lors de la suppression du fichier : ${err}`)
+        : console.log("fichier supprimé avec succès");
+    });
   },
 };
