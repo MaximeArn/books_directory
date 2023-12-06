@@ -83,11 +83,13 @@ server.patch(
   upload.single("image"),
   ({ params: { id }, body, file }, res) => {
     try {
-      //TODO: if there is a file add the path to the body object
       const books = getUpdatedBooks();
       console.log(file);
-      // const id = req.params.id;
-      // const body = req.body;
+
+      if (file) {
+        body.imageLink = file.path;
+        //TODO: remove the previous version of the image
+      }
 
       let updatedBook = {};
 
