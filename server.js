@@ -90,12 +90,15 @@ server.patch(
       const indexToUpdate = books.findIndex(
         (book) => book.id === Number.parseInt(id)
       );
-      for (const key in body) {
-        const value = body[key];
-        if (value !== "") {
-          updatedBook[key] = value;
-        }
-      }
+
+      if (indexToUpdate === -1)
+        throw new Error("Error: this book was not find");
+
+      updatedBook = {
+        ...Object.fromEntries(
+          Object.entries(body).filter(([key, value]) => value !== "")
+        ),
+      };
 
       if (file) {
         updatedBook.imageLink = file.path;
@@ -103,26 +106,18 @@ server.patch(
           deleteImage(books[indexToUpdate].imageLink);
       }
 
-      updatedBook = parseBookObject(updatedBook);
-
       updatedBook = {
         ...books[indexToUpdate],
         ...updatedBook,
       };
 
-      if (indexToUpdate !== -1) {
-        books[indexToUpdate] = updatedBook;
-        // change the book obect in books with parsedUpdatedBook
-        fs.writeFile("./books.json", JSON.stringify(books), () => {
-          console.log("books was rewrited");
-        });
-        res.json(updatedBook);
-      } else {
-        throw new Error("Error: this book was not find");
-      }
+      updatedBook = parseBookObject(updatedBook);
 
-      // return the up to date object
-      res.end();
+      books[indexToUpdate] = updatedBook;
+      fs.writeFile("./books.json", JSON.stringify(books), () => {
+        console.log("books was rewrited");
+        res.json(updatedBook);
+      });
     } catch (error) {
       res.json(error.message);
     }

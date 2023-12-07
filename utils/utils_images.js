@@ -14,7 +14,7 @@ module.exports = {
     fs.unlink(imagePath, (err) => {
       err
         ? console.log(`Erreur lors de la suppression du fichier : ${err}`)
-        : console.log("fichier supprimé avec succès");
+        : console.log(`image ${imagePath} supprimée avec succèes. `);
     });
   },
 };
