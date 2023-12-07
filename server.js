@@ -30,9 +30,7 @@ server.get("/", (req, res) => {
 });
 
 server.get("/book/:id", ({ params: { id } }, res) => {
-  console.log(id);
   const book = books.find((book) => String(book.id) === id);
-  console.log(book);
   res.send(book);
 });
 
@@ -50,11 +48,10 @@ server.post("/", upload.single("image"), ({ body, file: { path } }, res) => {
   body.id = getId();
 
   newList = [...books, body];
-  console.log(newList);
   fs.writeFile("./books.json", JSON.stringify(newList), () => {
     console.log(`${body.title} added to the list !`);
+    res.json(body);
   });
-  res.end();
 });
 
 server.delete("/book/:id", ({ params: { id } }, res) => {
@@ -64,16 +61,14 @@ server.delete("/book/:id", ({ params: { id } }, res) => {
     const indexToRemove = books.findIndex(
       (book) => book.id === Number.parseInt(id)
     );
-    if (indexToRemove !== -1) {
-      console.log(indexToRemove);
-      books.splice(indexToRemove, 1);
-      fs.writeFile("./books.json", JSON.stringify(books), () => {
-        console.log("books was rewrited");
-      });
-      res.end();
-    } else {
-      throw new Error("Error: this book was not find");
-    }
+
+    if (indexToRemove === -1) throw new Error("Error: this book was not findn");
+
+    books.splice(indexToRemove, 1);
+    fs.writeFile("./books.json", JSON.stringify(books), () => {
+      console.log("books was rewrited");
+      res.json(books);
+    });
   } catch (error) {
     res.json(error.message);
   }
