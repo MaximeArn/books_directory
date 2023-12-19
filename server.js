@@ -1,8 +1,11 @@
 const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
+const { Pool } = require("pg");
 
 let books = require("./books.json");
+
+const dbSettings = require("./dbConfig");
 const {
   getImageName,
   getId,
@@ -14,6 +17,7 @@ const errorsMiddleware = require("./errors/errorsMiddleware");
 
 const port = 3000;
 const server = express();
+const pool = new Pool(dbSettings);
 
 // config of the diskStorageOptions
 const storage = multer.diskStorage({

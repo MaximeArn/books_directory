@@ -18,4 +18,7 @@
 - ### Second phase :
   - use a database to store the informations
     - postgres to refamiliarize myself with sql
-  - write a documentation and host it
+- ### Third phase :
+  - implement a logger like winston
+- ### Fourth phase :
+  - - write a documentation and host it
