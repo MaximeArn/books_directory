@@ -3,7 +3,7 @@ const multer = require("multer");
 const fs = require("fs");
 const { Pool } = require("pg");
 
-let books = require("./books.json");
+// let books = require("./books.json");
 
 const dbSettings = require("./dbConfig");
 const {
@@ -30,14 +30,21 @@ const storage = multer.diskStorage({
 // instantiate the multer middleware with the diskStorageOptions
 const upload = multer({ storage: storage });
 
-server.get("/", (req, res) => {
-  res.send(books);
+server.get("/", async (req, res, next) => {
+  try {
+    const books = await pool.query("SELECT * FROM books ORDER BY id ASC");
+    res.send(books);
+  } catch (error) {
+    next(error);
+  }
 });
 
-server.get("/book/:id", ({ params: { id } }, res, next) => {
+server.get("/book/:id", async ({ params: { id } }, res, next) => {
   try {
-    const book = books.find((book) => String(book.id) === id);
-    if (book === undefined) throw new Error("This book does not exist ");
+    const book = await pool.query(
+      "SELECT * FROM books WHERE id=$1 ORDER BY id ASC",
+      [id]
+    );
     res.send(book);
   } catch (error) {
     next(error);
