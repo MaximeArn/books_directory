@@ -10,6 +10,7 @@ const {
   parseBookObject,
 } = require("./utils/utils");
 const { deleteImage } = require("./utils/utils_images");
+const errorsMiddleware = require("./errors/errorsMiddleware");
 
 const port = 3000;
 const server = express();
@@ -29,9 +30,14 @@ server.get("/", (req, res) => {
   res.send(books);
 });
 
-server.get("/book/:id", ({ params: { id } }, res) => {
-  const book = books.find((book) => String(book.id) === id);
-  res.send(book);
+server.get("/book/:id", ({ params: { id } }, res, next) => {
+  try {
+    const book = books.find((book) => String(book.id) === id);
+    if (book === undefined) throw new Error("This book does not exist ");
+    res.send(book);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /* 
@@ -40,29 +46,37 @@ without it the body is undefined
 the data from a multipart are sent as a Stream and multer is listening to this stream through busboy   
 */
 
-server.post("/", upload.single("image"), ({ body, file: { path } }, res) => {
-  books = getUpdatedBooks();
-  body.imageLink = path;
-  body.pages = Number.parseInt(body.pages);
-  body.year = Number.parseInt(body.year);
-  body.id = getId();
+server.post(
+  "/",
+  upload.single("image"),
+  ({ body, file: { path } }, res, next) => {
+    books = getUpdatedBooks();
+    body.imageLink = path;
+    body.pages = Number.parseInt(body.pages);
+    body.year = Number.parseInt(body.year);
+    body.id = getId();
 
-  newList = [...books, body];
-  fs.writeFile("./books.json", JSON.stringify(newList), () => {
-    console.log(`${body.title} added to the list !`);
-    res.json(body);
-  });
-});
+    newList = [...books, body];
+    try {
+      fs.writeFile("./books.json", JSON.stringify(newList), () => {
+        console.log(`${body.title} added to the list !`);
+        res.json(body);
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 server.delete("/book/:id", ({ params: { id } }, res) => {
   try {
     books = getUpdatedBooks();
-    // look at this part that looks useless
+    //TODO: look at this part that looks useless
     const indexToRemove = books.findIndex(
       (book) => book.id === Number.parseInt(id)
     );
 
-    if (indexToRemove === -1) throw new Error("Error: this book was not findn");
+    if (indexToRemove === -1) throw new Error("Error: this book was not found");
 
     books.splice(indexToRemove, 1);
     fs.writeFile("./books.json", JSON.stringify(books), () => {
@@ -70,7 +84,7 @@ server.delete("/book/:id", ({ params: { id } }, res) => {
       res.json(books);
     });
   } catch (error) {
-    res.json(error.message);
+    next(error);
   }
 });
 
@@ -87,7 +101,7 @@ server.patch(
       );
 
       if (indexToUpdate === -1)
-        throw new Error("Error: this book was not find");
+        throw new Error("Error: this book was not found");
 
       updatedBook = {
         ...Object.fromEntries(
@@ -114,10 +128,12 @@ server.patch(
         res.json(updatedBook);
       });
     } catch (error) {
-      res.json(error.message);
+      next(error);
     }
   }
 );
+
+server.use(errorsMiddleware);
 
 server.listen(port, () => {
   console.log(`server is listening on port : ${port}`);
