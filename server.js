@@ -1,11 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
-const { Pool } = require("pg");
 
-// let books = require("./books.json");
-
-const dbSettings = require("./dbConfig");
 const {
   getImageName,
   getId,
@@ -13,12 +9,22 @@ const {
   parseBookObject,
 } = require("./utils/utils");
 const { deleteImage } = require("./utils/utils_images");
+const {
+  getBooks,
+  getBookById,
+  createUser,
+  deleteUser,
+} = require("./db/queries");
 const errorsMiddleware = require("./errors/errorsMiddleware");
 
 const port = 3000;
 const server = express();
-const pool = new Pool(dbSettings);
 
+/* 
+multer is parsing the multiforms and store the contentin the body of the request.
+without it the body is undefined 
+the data from a multipart are sent as a Stream and multer is listening to this stream through busboy   
+*/
 // config of the diskStorageOptions
 const storage = multer.diskStorage({
   destination: "./images/",
@@ -30,83 +36,10 @@ const storage = multer.diskStorage({
 // instantiate the multer middleware with the diskStorageOptions
 const upload = multer({ storage: storage });
 
-server.get("/", async (req, res, next) => {
-  try {
-    const books = await pool.query("SELECT * FROM books ORDER BY id ASC");
-    res.send(books);
-  } catch (error) {
-    next(error);
-  }
-});
-
-server.get("/book/:id", async ({ params: { id } }, res, next) => {
-  try {
-    const book = await pool.query(
-      "SELECT * FROM books WHERE id=$1 ORDER BY id ASC",
-      [id]
-    );
-    res.send(book);
-  } catch (error) {
-    next(error);
-  }
-});
-
-/* 
-multer is parsing the multiforms and store the contentin the body of the request.
-without it the body is undefined 
-the data from a multipart are sent as a Stream and multer is listening to this stream through busboy   
-*/
-
-server.post(
-  "/",
-  upload.single("image"),
-  async ({ body, file: { path } }, res, next) => {
-    body.imageLink = path;
-    body.pages = Number.parseInt(body.pages);
-    body.year = Number.parseInt(body.year);
-
-    try {
-      const {
-        rows: [insertedBook],
-      } = await pool.query(
-        "INSERT INTO books (author,country,imageLink,language,link,pages,title,year) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
-        [
-          body.author,
-          body.country,
-          body.imageLink,
-          body.language,
-          body.link,
-          body.pages,
-          body.title,
-          body.year,
-        ]
-      );
-      res.json(insertedBook);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-server.delete("/book/:id", ({ params: { id } }, res) => {
-  try {
-    books = getUpdatedBooks();
-    //TODO: look at this part that looks useless
-    const indexToRemove = books.findIndex(
-      (book) => book.id === Number.parseInt(id)
-    );
-
-    if (indexToRemove === -1) throw new Error("Error: this book was not found");
-
-    books.splice(indexToRemove, 1);
-    fs.writeFile("./books.json", JSON.stringify(books), () => {
-      console.log("books was rewrited");
-      res.json(books);
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+server.get("/", getBooks);
+server.get("/book/:id", getBookById);
+server.post("/", upload.single("image"), createUser);
+server.delete("/book/:id", deleteUser);
 
 server.patch(
   "/book/:id",

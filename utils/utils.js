@@ -9,11 +9,6 @@ module.exports = {
     return `${imageName}.${fileExtension}`;
   },
 
-  getId: () => {
-    lastBook = books[books.length - 1];
-    return lastBook.id + 1;
-  },
-
   getUpdatedBooks: () => {
     delete require.cache[require.resolve("../books.json")];
     return require("../books.json");
