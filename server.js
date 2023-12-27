@@ -60,19 +60,28 @@ the data from a multipart are sent as a Stream and multer is listening to this s
 server.post(
   "/",
   upload.single("image"),
-  ({ body, file: { path } }, res, next) => {
-    books = getUpdatedBooks();
+  async ({ body, file: { path } }, res, next) => {
     body.imageLink = path;
     body.pages = Number.parseInt(body.pages);
     body.year = Number.parseInt(body.year);
-    body.id = getId();
 
-    newList = [...books, body];
     try {
-      fs.writeFile("./books.json", JSON.stringify(newList), () => {
-        console.log(`${body.title} added to the list !`);
-        res.json(body);
-      });
+      const {
+        rows: [insertedBook],
+      } = await pool.query(
+        "INSERT INTO books (author,country,imageLink,language,link,pages,title,year) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
+        [
+          body.author,
+          body.country,
+          body.imageLink,
+          body.language,
+          body.link,
+          body.pages,
+          body.title,
+          body.year,
+        ]
+      );
+      res.json(insertedBook);
     } catch (error) {
       next(error);
     }
