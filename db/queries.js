@@ -97,8 +97,7 @@ const updateUser = async ({ body, params, file }, res, next) => {
 
     if (file) {
       filteredBody.imageLink = file.path;
-      // updatedBook.title !== books[indexToUpdate].title &&
-      // deleteImage(books[indexToUpdate].imageLink);
+      //TODO: remove the previous version of the image: maybe by storing it's path in the db
     }
 
     const setClause = Object.entries(filteredBody)
