@@ -87,10 +87,44 @@ const feedDatabase = async (req, res, next) => {
   }
 };
 
+const updateUser = async ({ body, params, file }, res, next) => {
+  try {
+    filteredBody = Object.fromEntries(
+      Object.entries(body).filter(([key, value]) => value !== "")
+    );
+    if (Object.keys(filteredBody) === 0)
+      res.send("cannot update book with empty values");
+
+    if (file) {
+      filteredBody.imageLink = file.path;
+      // updatedBook.title !== books[indexToUpdate].title &&
+      // deleteImage(books[indexToUpdate].imageLink);
+    }
+
+    const setClause = Object.entries(filteredBody)
+      .map(([key, value], index) => `${key} = $${index + 1}`)
+      .join(", ");
+
+    const {
+      rows: [updatedBook],
+    } = await pool.query(
+      `UPDATE books SET ${setClause}  WHERE id = $${
+        Object.keys(filteredBody).length + 1
+      } RETURNING *`,
+      [...Object.values(filteredBody), params.id]
+    );
+
+    res.json(updatedBook);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getBooks,
   getBookById,
   createUser,
   deleteUser,
   feedDatabase,
+  updateUser,
 };

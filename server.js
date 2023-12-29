@@ -14,6 +14,7 @@ const {
   createUser,
   deleteUser,
   feedDatabase,
+  updateUser,
 } = require("./db/queries");
 const errorsMiddleware = require("./errors/errorsMiddleware");
 
@@ -41,51 +42,7 @@ server.get("/book/:id", getBookById);
 server.post("/feedDb", feedDatabase);
 server.post("/", upload.single("image"), createUser);
 server.delete("/book/:id", deleteUser);
-
-server.patch(
-  "/book/:id",
-  upload.single("image"),
-  ({ params: { id }, body, file }, res) => {
-    try {
-      const books = getUpdatedBooks();
-
-      let updatedBook = {};
-      const indexToUpdate = books.findIndex(
-        (book) => book.id === Number.parseInt(id)
-      );
-
-      if (indexToUpdate === -1)
-        throw new Error("Error: this book was not found");
-
-      updatedBook = {
-        ...Object.fromEntries(
-          Object.entries(body).filter(([key, value]) => value !== "")
-        ),
-      };
-
-      if (file) {
-        updatedBook.imageLink = file.path;
-        updatedBook.title !== books[indexToUpdate].title &&
-          deleteImage(books[indexToUpdate].imageLink);
-      }
-
-      updatedBook = {
-        ...books[indexToUpdate],
-        ...updatedBook,
-      };
-
-      updatedBook = parseBookObject(updatedBook);
-
-      books[indexToUpdate] = updatedBook;
-      fs.writeFile("./books.json", JSON.stringify(books), () => {
-        console.log("books was rewrited");
-        res.json(updatedBook);
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+server.patch("/book/:id", upload.single("image"), updateUser);
 
 server.use(errorsMiddleware);
 
