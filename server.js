@@ -4,7 +4,6 @@ const fs = require("fs");
 
 const {
   getImageName,
-  getId,
   getUpdatedBooks,
   parseBookObject,
 } = require("./utils/utils");
@@ -14,6 +13,7 @@ const {
   getBookById,
   createUser,
   deleteUser,
+  feedDatabase,
 } = require("./db/queries");
 const errorsMiddleware = require("./errors/errorsMiddleware");
 
@@ -38,6 +38,7 @@ const upload = multer({ storage: storage });
 
 server.get("/", getBooks);
 server.get("/book/:id", getBookById);
+server.post("/feedDb", feedDatabase);
 server.post("/", upload.single("image"), createUser);
 server.delete("/book/:id", deleteUser);
 

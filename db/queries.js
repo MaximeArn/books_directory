@@ -1,6 +1,8 @@
 const { Pool } = require("pg");
 const dbSettings = require("./dbConfig");
 
+const books = require("../books.json");
+
 const pool = new Pool(dbSettings);
 
 const getBooks = async (req, res, next) => {
@@ -62,9 +64,33 @@ const deleteUser = async ({ params: { id } }, res) => {
   }
 };
 
+const feedDatabase = async (req, res, next) => {
+  try {
+    books.map((book) => {
+      pool.query(
+        "INSERT INTO books (author,country,imageLink,language,link,pages,title,year) values ($1,$2,$3,$4,$5,$6,$7,$8)",
+        [
+          book.author,
+          book.country,
+          book.imageLink,
+          book.language,
+          book.link,
+          book.pages,
+          book.title,
+          book.year,
+        ]
+      );
+    });
+    res.send("database was fed");
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getBooks,
   getBookById,
   createUser,
   deleteUser,
+  feedDatabase,
 };
