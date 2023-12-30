@@ -1,8 +1,7 @@
 const logger = require("./logger");
 
 errorsMiddleware = (err, req, res, next) => {
-  // add metadata to the error to easily debug
-  const childLogger = logger.child({
+  logger.error(err.message, {
     statusCode: err.statusCode,
     requestPayload: {
       body: req.body,
@@ -11,9 +10,7 @@ errorsMiddleware = (err, req, res, next) => {
       route: req.route,
       originalUrl: req.originalUrl,
     },
-    stack: err.stack,
   });
-  childLogger.error(err.message);
   res.status(err.statusCode || 500).send(`Error : ${err.message}`);
 };
 

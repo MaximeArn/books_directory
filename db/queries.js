@@ -12,7 +12,6 @@ const getBooks = async (req, res, next) => {
     const { rows: books } = await pool.query(
       "SELECT * FROM books ORDER BY id ASC"
     );
-
     res.send(books);
   } catch (error) {
     next(new CustomError(error.message, 500));
@@ -41,12 +40,12 @@ const getBookById = async (req, res, next) => {
   }
 };
 
-const createBook = async ({ body, file: { path } }, res, next) => {
-  body.imageLink = path;
-  body.pages = Number.parseInt(body.pages);
-  body.year = Number.parseInt(body.year);
-
+const createBook = async ({ body, file }, res, next) => {
   try {
+    body.imageLink = file ? file.path : "default.png";
+    body.pages = Number.parseInt(body.pages);
+    body.year = Number.parseInt(body.year);
+
     const {
       rows: [insertedBook],
     } = await pool.query(
@@ -109,13 +108,14 @@ const feedDatabase = async (req, res, next) => {
   }
 };
 
-const updateBook = async ({ body, params, file }, res, next) => {
+const updateBook = async ({ body, params: { id }, file }, res, next) => {
   try {
     filteredBody = Object.fromEntries(
       Object.entries(body).filter(([key, value]) => value !== "")
     );
-    if (Object.keys(filteredBody) === 0)
-      res.send("cannot update book with empty values");
+
+    if (Object.keys(filteredBody).length === 0)
+      throw new CustomError("cannot update book with empty values", 500);
 
     if (file) {
       filteredBody.imageLink = file.path;
@@ -132,9 +132,13 @@ const updateBook = async ({ body, params, file }, res, next) => {
       `UPDATE books SET ${setClause}  WHERE id = $${
         Object.keys(filteredBody).length + 1
       } RETURNING *`,
-      [...Object.values(filteredBody), params.id]
+      [...Object.values(filteredBody), id]
     );
-
+    if (!updatedBook)
+      throw new CustomError(
+        `Le livre avec l'id ${id} n'a pas été trouvé.`,
+        404
+      );
     res.json(updatedBook);
   } catch (error) {
     next(new CustomError(error.message, 500));

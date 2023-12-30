@@ -3,22 +3,24 @@ const { combine, timestamp, json, colorize, align, printf } = winston.format;
 require("winston-daily-rotate-file");
 
 const combinedRotateFileTransport = new winston.transports.DailyRotateFile({
-  filename: "./logs/combined/combined-%DATE%.json",
+  filename: "./logs/combined/combined-%DATE%.log",
   datePattern: "DD-MM-YYYY",
   maxFiles: "14d",
+  format: json(),
 });
 
 const errorRotateFileTransport = new winston.transports.DailyRotateFile({
   level: "error",
-  filename: "./logs/errors/errors-%DATE%.json",
+  filename: "./logs/errors/errors-%DATE%.log",
   datePattern: "DD-MM-YYYY",
   maxFiles: "30d",
+  format: json(),
 });
 
 const consoleTransport = new winston.transports.Console({
   format: combine(
     timestamp({
-      format: "YYYY-MM-DD hh:mm:ss.SSS A",
+      format: "YYYY-MM-DD hh:mm:ss A",
     }),
     align(),
     colorize({ all: true }),
@@ -34,9 +36,5 @@ const logger = winston.createLogger({
     errorRotateFileTransport,
   ],
 });
-
-// logger.error("This is a critical error ");
-// logger.warn("this is just a warning message");
-// logger.info("this is just an informative message ");
 
 module.exports = logger;

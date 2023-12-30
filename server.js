@@ -2,7 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 
-const { getImageName } = require("./utils/utils");
+const logger = require("./errors/logger");
+const { getImageName, checkMissingInformation } = require("./utils/utils");
 const { deleteImage } = require("./utils/utils_images");
 const {
   getBooks,
@@ -13,6 +14,7 @@ const {
   updateBook,
 } = require("./db/queries");
 const errorsMiddleware = require("./errors/errorsMiddleware");
+const CustomError = require("./errors/customError");
 
 const port = 3000;
 const server = express();
@@ -22,11 +24,22 @@ multer is parsing the multiforms and store the contentin the body of the request
 without it the body is undefined 
 the data from a multipart are sent as a Stream and multer is listening to this stream through busboy   
 */
-// config of the diskStorageOptions
+
 const storage = multer.diskStorage({
   destination: "./images/",
-  filename: function ({ body: { title } }, { mimetype }, cb) {
-    cb(null, getImageName(title, mimetype));
+  filename: function ({ body: { title } }, file, cb) {
+    try {
+      if (!title) {
+        throw new Error(
+          "lors de l'upload d'une image le champ 'title' est requis."
+        );
+      }
+      const imageName = getImageName(title, file.mimetype);
+      cb(null, imageName);
+      logger.info(`Storing image: ${imageName}`);
+    } catch (error) {
+      cb(error);
+    }
   },
 });
 
@@ -43,5 +56,5 @@ server.patch("/book/:id", upload.single("image"), updateBook);
 server.use(errorsMiddleware);
 
 server.listen(port, () => {
-  console.log(`server is listening on port : ${port}`);
+  logger.info(`server is listening on port : ${port}`);
 });

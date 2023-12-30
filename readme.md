@@ -24,6 +24,6 @@
     - [x] Implement a console transport
     - [x] Implement a fs transport
     - [x] Rotate files every X days
-    - [ ] create an error structure that contains all the metaData needed in the logs
+    - [x] create an error structure that contains all the metaData needed in the logs
 - ### Fourth phase :
   - - write a documentation and host it
