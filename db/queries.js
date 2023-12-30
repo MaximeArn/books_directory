@@ -1,5 +1,7 @@
 const { Pool } = require("pg");
 const dbSettings = require("./dbConfig");
+const { logger } = require("../errors/logger");
+const CustomError = require("../errors/customError");
 
 const books = require("../books.json");
 
@@ -7,12 +9,15 @@ const pool = new Pool(dbSettings);
 
 const getBooks = async (req, res, next) => {
   try {
-    const { rows: books } = await pool.query(
-      "SELECT * FROM books ORDER BY id ASC"
-    );
+    throw new Error("error message ");
+    // const { rows: books } = await pool.query(
+    //   "SELECT * FROM books ORDER BY id ASC"
+    // );
+
     res.send(books);
   } catch (error) {
-    next(error);
+    console.log(error);
+    next(new CustomError(error.message, 500, req));
   }
 };
 

@@ -2,11 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 
-const {
-  getImageName,
-  getUpdatedBooks,
-  parseBookObject,
-} = require("./utils/utils");
+const { getImageName } = require("./utils/utils");
 const { deleteImage } = require("./utils/utils_images");
 const {
   getBooks,
