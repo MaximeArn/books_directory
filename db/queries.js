@@ -9,31 +9,39 @@ const pool = new Pool(dbSettings);
 
 const getBooks = async (req, res, next) => {
   try {
-    throw new Error("error message ");
-    // const { rows: books } = await pool.query(
-    //   "SELECT * FROM books ORDER BY id ASC"
-    // );
+    const { rows: books } = await pool.query(
+      "SELECT * FROM books ORDER BY id ASC"
+    );
 
     res.send(books);
   } catch (error) {
-    console.log(error);
-    next(new CustomError(error.message, 500, req));
+    next(new CustomError(error.message, 500));
   }
 };
 
-const getBookById = async ({ params: { id } }, res, next) => {
+const getBookById = async (req, res, next) => {
   try {
-    const { rows: book } = await pool.query(
+    const {
+      params: { id },
+    } = req;
+    const { rowCount, rows: book } = await pool.query(
       "SELECT * FROM books WHERE id=$1 ORDER BY id ASC",
       [id]
     );
-    res.send(book);
+    if (rowCount === 0) {
+      throw new CustomError(
+        `Le livre avec l'id ${id} n'a pas été trouvé.`,
+        404
+      );
+    } else {
+      res.send(book);
+    }
   } catch (error) {
-    next(error);
+    next(new CustomError(error.message, 500));
   }
 };
 
-const createUser = async ({ body, file: { path } }, res, next) => {
+const createBook = async ({ body, file: { path } }, res, next) => {
   body.imageLink = path;
   body.pages = Number.parseInt(body.pages);
   body.year = Number.parseInt(body.year);
@@ -56,16 +64,25 @@ const createUser = async ({ body, file: { path } }, res, next) => {
     );
     res.json(insertedBook);
   } catch (error) {
-    next(error);
+    next(new CustomError(error.message, 500));
   }
 };
 
-const deleteUser = async ({ params: { id } }, res) => {
+const deleteBook = async ({ params: { id } }, res, next) => {
   try {
-    pool.query("DELETE from books WHERE id = $1", [id]);
-    res.send(`User with id : ${id} has been deleted`);
+    const { rowCount } = await pool.query("DELETE from books WHERE id = $1", [
+      id,
+    ]);
+    if (rowCount === 0) {
+      throw new CustomError(
+        `Le livre avec l'id ${id} n'a pas été trouvé.`,
+        404
+      );
+    } else {
+      res.send(`User with id : ${id} has been deleted`);
+    }
   } catch (error) {
-    next(error);
+    next(new CustomError(error.message, 500));
   }
 };
 
@@ -88,11 +105,11 @@ const feedDatabase = async (req, res, next) => {
     });
     res.send("database was fed");
   } catch (error) {
-    next(error);
+    next(new CustomError(error.message, 500));
   }
 };
 
-const updateUser = async ({ body, params, file }, res, next) => {
+const updateBook = async ({ body, params, file }, res, next) => {
   try {
     filteredBody = Object.fromEntries(
       Object.entries(body).filter(([key, value]) => value !== "")
@@ -120,15 +137,15 @@ const updateUser = async ({ body, params, file }, res, next) => {
 
     res.json(updatedBook);
   } catch (error) {
-    next(error);
+    next(new CustomError(error.message, 500));
   }
 };
 
 module.exports = {
   getBooks,
   getBookById,
-  createUser,
-  deleteUser,
+  createBook,
+  deleteBook,
   feedDatabase,
-  updateUser,
+  updateBook,
 };
