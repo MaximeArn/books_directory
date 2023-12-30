@@ -25,5 +25,9 @@
     - [x] Implement a fs transport
     - [x] Rotate files every X days
     - [x] create an error structure that contains all the metaData needed in the logs
+    - [ ] handle uncaughtExceptions and uncaughtRejections
+    - [ ] store logs in a centralized service
 - ### Fourth phase :
-  - - write a documentation and host it
+  - [ ] write a documentation
+  - [ ] host it
+  - [ ] GOT IT !
