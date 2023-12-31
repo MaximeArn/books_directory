@@ -16,7 +16,8 @@ const {
 const errorsMiddleware = require("./errors/errorsMiddleware");
 const CustomError = require("./errors/customError");
 
-const port = 3000;
+require("dotenv").config();
+const port = process.env.PORT;
 const server = express();
 
 /* 
@@ -31,7 +32,7 @@ const storage = multer.diskStorage({
     try {
       if (!title) {
         throw new Error(
-          "lors de l'upload d'une image le champ 'title' est requis."
+          "lors de l'upload d'une image le shamp 'title' est requis."
         );
       }
       const imageName = getImageName(title, file.mimetype);

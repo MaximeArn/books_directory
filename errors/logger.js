@@ -1,6 +1,11 @@
 const winston = require("winston");
+const { Logtail } = require("@logtail/node");
+const { LogtailTransport } = require("@logtail/winston");
 const { combine, timestamp, json, colorize, align, printf } = winston.format;
 require("winston-daily-rotate-file");
+require("dotenv").config();
+
+const logtail = new Logtail(process.env.LOGTAIL_TOKEN);
 
 const combinedRotateFileTransport = new winston.transports.DailyRotateFile({
   filename: "./logs/combined/combined-%DATE%.log",
@@ -49,6 +54,7 @@ const logger = winston.createLogger({
     consoleTransport,
     combinedRotateFileTransport,
     errorRotateFileTransport,
+    new LogtailTransport(logtail),
   ],
   exceptionHandlers: [uncaughtExceptionTransport, consoleTransport],
   rejectionHandlers: [uncaughtRejectionTransport, consoleTransport],
