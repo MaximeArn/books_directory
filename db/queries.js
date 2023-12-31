@@ -1,15 +1,19 @@
-const { Pool } = require("pg");
-const dbSettings = require("./dbConfig");
-const { logger } = require("../errors/logger");
+const { Client } = require("pg");
 const CustomError = require("../errors/customError");
+require("dotenv").config();
 
 const books = require("../books.json");
 
-const pool = new Pool(dbSettings);
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL ? true : false,
+});
+
+client.connect();
 
 const getBooks = async (req, res, next) => {
   try {
-    const { rows: books } = await pool.query(
+    const { rows: books } = await client.query(
       "SELECT * FROM books ORDER BY id ASC"
     );
     res.send(books);
@@ -23,7 +27,7 @@ const getBookById = async (req, res, next) => {
     const {
       params: { id },
     } = req;
-    const { rowCount, rows: book } = await pool.query(
+    const { rowCount, rows: book } = await client.query(
       "SELECT * FROM books WHERE id=$1 ORDER BY id ASC",
       [id]
     );
@@ -48,7 +52,7 @@ const createBook = async ({ body, file }, res, next) => {
 
     const {
       rows: [insertedBook],
-    } = await pool.query(
+    } = await client.query(
       "INSERT INTO books (author,country,imageLink,language,link,pages,title,year) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
       [
         body.author,
@@ -69,7 +73,7 @@ const createBook = async ({ body, file }, res, next) => {
 
 const deleteBook = async ({ params: { id } }, res, next) => {
   try {
-    const { rowCount } = await pool.query("DELETE from books WHERE id = $1", [
+    const { rowCount } = await client.query("DELETE from books WHERE id = $1", [
       id,
     ]);
     if (rowCount === 0) {
@@ -88,7 +92,7 @@ const deleteBook = async ({ params: { id } }, res, next) => {
 const feedDatabase = async (req, res, next) => {
   try {
     books.map((book) => {
-      pool.query(
+      client.query(
         "INSERT INTO books (author,country,imageLink,language,link,pages,title,year) values ($1,$2,$3,$4,$5,$6,$7,$8)",
         [
           book.author,
@@ -128,7 +132,7 @@ const updateBook = async ({ body, params: { id }, file }, res, next) => {
 
     const {
       rows: [updatedBook],
-    } = await pool.query(
+    } = await client.query(
       `UPDATE books SET ${setClause}  WHERE id = $${
         Object.keys(filteredBody).length + 1
       } RETURNING *`,
