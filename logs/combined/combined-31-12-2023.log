@@ -11,3 +11,5 @@
 {"level":"info","message":"Storing image: le-meilleur-des-monde.jpeg","timestamp":"2023-12-31T10:49:17.142Z"}
 {"level":"error","message":"Le livre avec l'id 11445 n'a pas été trouvé.","requestPayload":{"body":{"author":"Aldous Huxley ","title":"Le meilleur des monde"},"originalUrl":"/book/11445","params":{},"rawHeaders":["Host","localhost:3000","Content-Type","multipart/form-data; boundary=X-INSOMNIA-BOUNDARY","User-Agent","insomnia/8.4.2","Accept","*/*","Content-Length","86517"],"route":{"methods":{"patch":true},"path":"/book/:id","stack":[{"keys":[],"method":"patch","name":"multerMiddleware","regexp":{"fast_slash":false,"fast_star":false}},{"keys":[],"method":"patch","name":"updateBook","regexp":{"fast_slash":false,"fast_star":false}}]}},"statusCode":500,"timestamp":"2023-12-31T10:49:17.154Z"}
 {"level":"info","message":"server is listening on port : 3000","timestamp":"2023-12-31T10:50:07.711Z"}
+{"level":"info","message":"server is listening on port : 3000","timestamp":"2023-12-31T14:34:30.373Z"}
+{"level":"info","message":"server is listening on port : 3000","timestamp":"2023-12-31T14:44:29.202Z"}
