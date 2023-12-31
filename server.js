@@ -50,7 +50,7 @@ const upload = multer({ storage: storage });
 server.get("/", getBooks);
 server.get("/getServerStatus", (req, res, next) => {
   try {
-    res.send(process.uptime());
+    res.json(process.uptime());
   } catch (error) {}
 });
 server.get("/book/:id", getBookById);
