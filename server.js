@@ -48,6 +48,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 server.get("/", getBooks);
+server.get("/getServerStatus", (req, res, next) => {
+  try {
+    res.send(process.uptime());
+  } catch (error) {}
+});
 server.get("/book/:id", getBookById);
 server.post("/feedDb", feedDatabase);
 server.post("/", upload.single("image"), createBook);
