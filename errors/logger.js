@@ -17,6 +17,21 @@ const errorRotateFileTransport = new winston.transports.DailyRotateFile({
   format: json(),
 });
 
+const uncaughtExceptionTransport = new winston.transports.DailyRotateFile({
+  filename: "./logs/uncaughtExceptions/exceptions-%DATE%.log",
+  datePattern: "DD-MM-YYYY",
+  maxFiles: "30d",
+  format: json(),
+});
+
+const uncaughtRejectionTransport = new winston.transports.DailyRotateFile({
+  level: "error",
+  filename: "./logs/uncaughtRejections/rejections-%DATE%.log",
+  datePattern: "DD-MM-YYYY",
+  maxFiles: "30d",
+  format: json(),
+});
+
 const consoleTransport = new winston.transports.Console({
   format: combine(
     timestamp({
@@ -35,6 +50,8 @@ const logger = winston.createLogger({
     combinedRotateFileTransport,
     errorRotateFileTransport,
   ],
+  exceptionHandlers: [uncaughtExceptionTransport, consoleTransport],
+  rejectionHandlers: [uncaughtRejectionTransport, consoleTransport],
 });
 
 module.exports = logger;
