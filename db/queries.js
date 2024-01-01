@@ -14,7 +14,7 @@ client.connect();
 const getBooks = async (req, res, next) => {
   try {
     const { rows: books } = await client.query(
-      `SELECT * FROM "books" ORDER BY id ASC`
+      "SELECT * FROM books ORDER BY id ASC"
     );
     res.send(books);
   } catch (error) {

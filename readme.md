@@ -28,6 +28,12 @@
     - [x] handle uncaughtExceptions and uncaughtRejections
     - [x] store logs in a centralized service
 - ### Fourth phase :
-  - [ ] write a documentation
-  - [ ] host it
-  - [ ] GOT IT !
+  - [x] write a documentation
+  - [x] host it
+  - [x] GOT IT !
+
+# How to test :
+
+server is hosted on this url :
+
+`https://books-directory-hosting-3428f019a6a7.herokuapp.com/`
