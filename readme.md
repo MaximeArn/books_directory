@@ -8,6 +8,12 @@ _This project is only a way to train myself and was not though to be used by peo
 
 although it is not possible to use this API for your project (because all requests are sent to the same database) It is possible to test the routes listed below.
 
+## How to test :
+
+server is hosted on this url :
+
+`https://books-directory-hosting-3428f019a6a7.herokuapp.com/`
+
 ## **Routes** :
 
 ### _GET :_
