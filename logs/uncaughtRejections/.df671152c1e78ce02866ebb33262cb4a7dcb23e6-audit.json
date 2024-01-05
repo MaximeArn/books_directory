@@ -9,6 +9,11 @@
             "date": 1704018820030,
             "name": "logs/uncaughtRejections/rejections-31-12-2023.log",
             "hash": "62e456490ddf22f0b15951dc6e3b4c7d88b400e66138273dd9a7bff792e2a4d7"
+        },
+        {
+            "date": 1704148337647,
+            "name": "logs/uncaughtRejections/rejections-01-01-2024.log",
+            "hash": "ad9e747c53aa34ee14ddfda29cf3ab7012ad225726f3afa374e1d265e35e4858"
         }
     ],
     "hashType": "sha256"
