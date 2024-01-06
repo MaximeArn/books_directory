@@ -12,7 +12,7 @@ although it is not possible to use this API for your project (because all reques
 
 server is hosted on this url :
 
-`https://books-directory-hosting-3428f019a6a7.herokuapp.com/`
+`https://books-repository-api.onrender.com`
 
 ## **Routes** :
 
